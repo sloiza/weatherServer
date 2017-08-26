@@ -48,7 +48,9 @@ router.route('/weather/:country_id')
 				temperature: Math.round(body.main.temp),
 				pressure: Math.round(body.main.pressure),
 				city: body.name,
-				weatherCondition: body.weather[0].main
+				country: body.sys.country,
+				weatherCondition: parseWeatherCondition(body.weather[0].main),
+				isNight: parseDate(body.name)
 			};
 			res.json({
 				statusCode: response.statusCode,
@@ -64,3 +66,26 @@ app.use('/api', router);
 // =============================================================================
 app.listen(port);
 console.log('Magic happens on port ' + port);
+
+function parseDate(city) {
+	//logica para obtener el date de la ciudad buscada
+	var hours = (new Date()).getHours();
+	//valida si esta entre 9-18 hs
+	if (hours > 9 && hours < 18) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function parseWeatherCondition(weatherCondition) {
+	if (weatherCondition == 'Thunderstorm' || weatherCondition == 'Drizzle' || 
+		weatherCondition == 'Rain' || weatherCondition == 'Snow') {
+		return 'rainy';
+	} else if (weatherCondition == 'Atmosphere' || weatherCondition == 'Clouds') {
+		return 'cloudy';
+	} else if (weatherCondition == 'Clear') {
+		return 'sunny';
+	}
+}
+

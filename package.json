@@ -1,0 +1,8 @@
+{
+	"name": "WeatherApp",
+	"main": "app.js",
+	"dependencies": {
+		"express": "^4.9.5",
+		"body-parser": "~1.0.1"
+	}
+}

@@ -2,8 +2,10 @@
   "name": "WeatherApp",
   "main": "app.js",
   "dependencies": {
+    "async": "^2.5.0",
     "body-parser": "~1.0.1",
     "express": "^4.9.5",
+    "moment-timezone": "^0.5.13",
     "request": "^2.81.0"
   }
 }

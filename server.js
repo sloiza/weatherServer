@@ -47,6 +47,7 @@ router.route('/weather/:country_id')
 			}
 
 			var body = JSON.parse(body);
+			console.log(body);
 			if (body.cod != undefined && body.cod == '404') {
 				res.json({
 					statusCode: 404,
@@ -57,7 +58,7 @@ router.route('/weather/:country_id')
 				    function parseIsNight(callback) {
 				    	var isNight;
 				    	parseDate(body.coord.lat, body.coord.lon, function (isNight) {
-				    		parseWeatherCondition(body.weather[0].main, function(weatherCond) {
+				    		parseWeatherCondition(body.weather[0].id, function(weatherCond) {
 				    			callback(null, isNight, weatherCond);
 				    		})
 				    	});
@@ -119,12 +120,20 @@ function parseDate(lat, long, callback) {
 }
 
 function parseWeatherCondition(weatherCondition, callback) {
-	if (weatherCondition == 'Thunderstorm' || weatherCondition == 'Drizzle' || 
-		weatherCondition == 'Rain' || weatherCondition == 'Snow') {
+	if ((weatherCondition >= 900 && weatherCondition <= 906) || 
+		(weatherCondition >= 952 && weatherCondition <= 962) ||
+		(weatherCondition >= 900 && weatherCondition <= 902) ||
+		(weatherCondition >= 600 && weatherCondition <= 622) ||
+		(weatherCondition >= 500 && weatherCondition <= 531) ||
+		(weatherCondition >= 300 && weatherCondition <= 321) ||
+		(weatherCondition >= 200 && weatherCondition <= 232)
+	) {
 		return callback('rainy');
-	} else if (weatherCondition == 'Atmosphere' || weatherCondition == 'Clouds') {
+	} else if ((weatherCondition >= 801 && weatherCondition <= 804) || 
+		(weatherCondition >= 701 && weatherCondition <= 781))  {
+
 		return callback('cloudy');
-	} else if (weatherCondition == 'Clear') {
+	} else if (weatherCondition == 800) {
 		return callback('sunny');
 	}
 }

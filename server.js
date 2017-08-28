@@ -131,7 +131,6 @@ function parseWeatherCondition(weatherCondition, callback) {
 		return callback('rainy');
 	} else if ((weatherCondition >= 801 && weatherCondition <= 804) || 
 		(weatherCondition >= 701 && weatherCondition <= 781))  {
-
 		return callback('cloudy');
 	} else if (weatherCondition == 800) {
 		return callback('sunny');
@@ -158,11 +157,11 @@ function getTimeZone(lat, long, callback) {
 }
 
 function getImageWeather(isNight, weatherCond, temperature, callback) {
-	if (!isNight && weatherCond == 'sunny' && temperature > 20) {
+	if (!isNight && weatherCond == 'sunny' && temperature >= 20) {
 		return callback(1);
-	} else if (!isNight && weatherCond == 'cloudy' && temperature > 20) {
+	} else if (!isNight && weatherCond == 'cloudy' && temperature >= 20) {
 		return callback(2);
-	} else if (!isNight && weatherCond == 'rainy' && temperature > 20) {
+	} else if (!isNight && weatherCond == 'rainy' && temperature >= 20) {
 		return callback(3);
 	}  else if (!isNight && weatherCond == 'sunny' && temperature > 8 && temperature < 20) {
 		return callback(4);
@@ -170,7 +169,7 @@ function getImageWeather(isNight, weatherCond, temperature, callback) {
 		return callback(5);
 	}  else if (!isNight && weatherCond == 'rainy' && temperature > 8 && temperature < 20) {
 		return callback(6);
-	}  else if (!isNight && weatherCond == 'sunny' && temperature < 8) {
+	}  else if (!isNight && weatherCond == 'sunny' && temperature <= 8) {
 		return callback(7);
 	}  else if (!isNight && weatherCond == 'cloudy' && temperature <= 8) {
 		return callback(8);

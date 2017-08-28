@@ -109,9 +109,9 @@ console.log('Magic happens on port ' + port);
 
 function parseDate(lat, long, callback) {
 	getTimeZone(lat,long, function(timeZone) {
-		var date = moment().tz(timeZone).format('HH');		
+		var date = moment().tz(timeZone).format('HH');	
 		//valida si esta entre 9-18 hs
-		if (date > 9 && date < 18) {
+		if (date >= 9 && date <= 18) {
 			return callback(false);
 		} else {
 			return callback(true);

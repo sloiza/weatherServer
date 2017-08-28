@@ -38,6 +38,7 @@ router.route('/weather/:country_id')
 
 		request({url:config.url, qs:query}, function(err, response, body) {
 			if(err) { 
+				console.log("error");
 				console.log(err); 
 				res.json({
 					statusCode: 500,
@@ -46,46 +47,54 @@ router.route('/weather/:country_id')
 			}
 
 			var body = JSON.parse(body);
+			if (body.cod != undefined && body.cod == '404') {
+				res.json({
+					statusCode: 404,
+					data: body.message
+				}); 	
+			} else {
+				async.waterfall([
+				    function parseIsNight(callback) {
+				    	var isNight;
+				    	parseDate(body.coord.lat, body.coord.lon, function (isNight) {
+				    		parseWeatherCondition(body.weather[0].main, function(weatherCond) {
+				    			callback(null, isNight, weatherCond);
+				    		})
+				    	});
+				    },
+				    function selectImage(isNight, weatherCond, callbackImage) {
+				    	getImageWeather(isNight, weatherCond, body.main.temp, function(image) {
+				    		callbackImage(null, isNight, weatherCond, image);
+				    	})
+				    },
+				    function parseQuery(isNight, weatherCond, image, callbackParseQuery) {
+				    	var dataResponse = {
+							id: body.id,
+							temperature: Math.round(body.main.temp),
+							pressure: Math.round(body.main.pressure),
+							city: body.name,
+							country: body.sys.country,
+							weatherCondition: weatherCond,
+							isNight: isNight,
+							imageCond: image
+						};
+						res.json({
+							statusCode: response.statusCode,
+							data: dataResponse
+						});
+						callbackParseQuery(null);
+				    }
+				], function (error) {
+				    if (error) {
+				    	res.json({
+							statusCode: 500,
+							data: error
+						}); 
+				    }
+				});
+			}
 
-			async.waterfall([
-			    function parseIsNight(callback) {
-			    	var isNight;
-			    	parseDate(body.coord.lat, body.coord.lon, function (isNight) {
-			    		parseWeatherCondition(body.weather[0].main, function(weatherCond) {
-			    			callback(null, isNight, weatherCond);
-			    		})
-			    	});
-			    },
-			    function selectImage(isNight, weatherCond, callbackImage) {
-			    	getImageWeather(isNight, weatherCond, body.main.temp, function(image) {
-			    		callbackImage(null, isNight, weatherCond, image);
-			    	})
-			    },
-			    function parseQuery(isNight, weatherCond, image, callbackParseQuery) {
-			    	var dataResponse = {
-						id: body.id,
-						temperature: Math.round(body.main.temp),
-						pressure: Math.round(body.main.pressure),
-						city: body.name,
-						country: body.sys.country,
-						weatherCondition: weatherCond,
-						isNight: isNight,
-						imageCond: image
-					};
-					res.json({
-						statusCode: response.statusCode,
-						data: dataResponse
-					});
-					callbackParseQuery(null);
-			    }
-			], function (error) {
-			    if (error) {
-			    	res.json({
-						statusCode: 500,
-						data: error
-					}); 
-			    }
-			});
+			
 		});
     });
 
@@ -165,4 +174,3 @@ function getImageWeather(isNight, weatherCond, temperature, callback) {
 	}
 
 }
-
